@@ -1,0 +1,121 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
+
+public class ProcessoSeletivo {
+
+    static class Candidato {
+        private String nome;
+        private double salarioPretendido;
+        private List<String> habilidades;
+
+        public Candidato(String nome, double salarioPretendido, List<String> habilidades) {
+            this.nome = nome;
+            this.salarioPretendido = salarioPretendido;
+            this.habilidades = habilidades;
+        }
+
+        public String getNome() {
+            return nome;
+        }
+
+        public double getSalarioPretendido() {
+            return salarioPretendido;
+        }
+
+        public List<String> getHabilidades() {
+            return habilidades;
+        }
+
+        public boolean deveSerChamado(double salarioBase) {
+            if (salarioBase > salarioPretendido) {
+                System.out.println("LIGAR PARA O CANDIDATO " + nome);
+                return true;
+            } else if (salarioBase == salarioPretendido) {
+                System.out.println("LIGAR PARA O CANDIDATO " + nome + ", COM CONTRA PROPOSTA");
+                return true;
+            } else {
+                System.out.println("AGUARDANDO RESULTADO DOS DEMAIS CANDIDATOS");
+                return false;
+            }
+        }
+    }
+
+    static class Vaga {
+        private String titulo;
+        private double salarioBase;
+        private List<String> requisitos;
+
+        public Vaga(String titulo, double salarioBase, List<String> requisitos) {
+            this.titulo = titulo;
+            this.salarioBase = salarioBase;
+            this.requisitos = requisitos;
+        }
+
+        public double getSalarioBase() {
+            return salarioBase;
+        }
+    }
+
+    private List<Candidato> candidatos;
+    private Vaga vaga;
+
+    public ProcessoSeletivo(Vaga vaga) {
+        this.vaga = vaga;
+        this.candidatos = new ArrayList<>();
+    }
+
+    public void cadastrarCandidato(Candidato candidato) {
+        candidatos.add(candidato);
+    }
+
+    public void avaliarCandidatos() {
+        for (Candidato candidato : candidatos) {
+            candidato.deveSerChamado(vaga.getSalarioBase());
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Definindo a vaga
+        System.out.print("Título da vaga: ");
+        String titulo = scanner.nextLine();
+        System.out.print("Salário base: ");
+        double salarioBase = scanner.nextDouble();
+        scanner.nextLine(); // Consumir a nova linha
+
+        System.out.print("Requisitos da vaga (separados por vírgula): ");
+        String requisitosInput = scanner.nextLine();
+        List<String> requisitos = Arrays.asList(requisitosInput.split(","));
+
+        Vaga vaga = new Vaga(titulo, salarioBase, requisitos);
+        ProcessoSeletivo processoSeletivo = new ProcessoSeletivo(vaga);
+
+        // Cadastrando candidatos
+        while (true) {
+            System.out.print("Nome do candidato (ou 'sair' para finalizar): ");
+            String nome = scanner.nextLine();
+            if (nome.equalsIgnoreCase("sair")) {
+                break;
+            }
+
+            System.out.print("Salário pretendido: ");
+            double salarioPretendido = scanner.nextDouble();
+            scanner.nextLine(); // Consumir a nova linha
+
+            System.out.print("Habilidades do candidato (separadas por vírgula): ");
+            String habilidadesInput = scanner.nextLine();
+            List<String> habilidades = Arrays.asList(habilidadesInput.split(","));
+
+            Candidato candidato = new Candidato(nome, salarioPretendido, habilidades);
+            processoSeletivo.cadastrarCandidato(candidato);
+        }
+
+        // Avaliando candidatos
+        processoSeletivo.avaliarCandidatos();
+
+        scanner.close(); // Fecha o scanner
+    }
+}
